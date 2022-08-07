@@ -1,9 +1,15 @@
-FROM golang:1.17
+ARG GO_VER=1.17
+ARG OPERATOR_VER=1.19.1
+
+FROM golang:${GO_VER}
+
+
+
 
 # Install operator-sdk 
 RUN export ARCH=$(case $(uname -m) in x86_64) echo -n amd64 ;; aarch64) echo -n arm64 ;; *) echo -n $(uname -m) ;; esac) && \
     export OS=$(uname | awk '{print tolower($0)}') && \
-    export OPERATOR_SDK_DL_URL=https://github.com/operator-framework/operator-sdk/releases/download/v1.19.1 && \
+    export OPERATOR_SDK_DL_URL=https://github.com/operator-framework/operator-sdk/releases/download/${OPERATOR_VER} && \
     curl -LO ${OPERATOR_SDK_DL_URL}/operator-sdk_${OS}_${ARCH} && \
     chmod +x operator-sdk_${OS}_${ARCH} &&  mv operator-sdk_${OS}_${ARCH} /usr/local/bin/operator-sdk
 
