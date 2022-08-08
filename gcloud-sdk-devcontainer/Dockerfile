@@ -1,10 +1,12 @@
 FROM google/cloud-sdk:latest
 
 
-RUN apt-get -y install kubectl google-cloud-sdk-gke-gcloud-auth-plugin bash-completion
+RUN apt-get -y install kubectl google-cloud-sdk-gke-gcloud-auth-plugin bash-completion jq wget
 RUN curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+RUN wget https://github.com/mikefarah/yq/releases/download/v4.27.2/yq_linux_amd64 -O /usr/bin/yq && \
+    chmod +x /usr/bin/yq
 
-# Install krew
+# Install krew and useful plugin
 RUN set -x; cd "$(mktemp -d)" && \
     OS="$(uname | tr '[:upper:]' '[:lower:]')" && \
     ARCH="$(uname -m | sed -e 's/x86_64/amd64/' -e 's/\(arm\)\(64\)\?.*/\1\2/' -e 's/aarch64$/arm64/')" && \
@@ -12,8 +14,9 @@ RUN set -x; cd "$(mktemp -d)" && \
     curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/${KREW}.tar.gz" && \
     tar zxvf "${KREW}.tar.gz" && \
     ./"${KREW}" install krew  && \
-    ./"${KREW}" install ctx  && \
-    ./"${KREW}" install ns  
+    ./"${KREW}" install ctx   && \
+    ./"${KREW}" install ns    && \
+    ./"${KREW}" install neat   
     
 
 # Install kube-ps1
